@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasAudit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Tag extends Model
 {
+    use HasAudit;
+
     protected $fillable = [
         'name',
         'slug',
