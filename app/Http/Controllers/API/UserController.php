@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\UserService;
 
@@ -15,12 +16,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $users = User::paginate();
 
-        return response()->json([
-            'success' => true,
-            'data' => $users,
-        ], 200);
+        return UserResource::collection($users);
     }
 
     /**
@@ -38,19 +36,13 @@ class UserController extends Controller
     {
         if ($request->user()->cannot('create', User::class)) {
             return response()->json([
-                'success' => false,
                 'message' => 'Unauthorized to create user',
-                'data' => null,
             ], 403);
         }
 
         $user = $service->store($request->validated());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User created successfully',
-            'data' => $user,
-        ], 201);
+        return new UserResource($user);
     }
 
     /**
@@ -58,10 +50,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return response()->json([
-            'success' => true,
-            'data' => $user,
-        ], 200);
+        return new UserResource($user);
     }
 
     /**
@@ -79,9 +68,7 @@ class UserController extends Controller
     {
         if ($request->user()->cannot('update', $user)) {
             return response()->json([
-                'success' => false,
                 'message' => 'Unauthorized to update this user',
-                'data' => null,
             ], 403);
         }
 
@@ -90,11 +77,7 @@ class UserController extends Controller
             'updated_by' => $request->user()->id,
         ]));
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User updated successfully',
-            'data' => $user,
-        ], 200);
+        return new UserResource($user);
     }
 
     /**
@@ -104,9 +87,7 @@ class UserController extends Controller
     {
         if (auth()->user()->cannot('delete', $user)) {
             return response()->json([
-                'success' => false,
                 'message' => 'Unauthorized to delete this user',
-                'data' => null,
             ], 403);
         }
 
@@ -117,9 +98,7 @@ class UserController extends Controller
         $user->delete();
 
         return response()->json([
-            'success' => true,
             'message' => 'User deleted successfully',
-            'data' => null,
         ], 200);
     }
 }
