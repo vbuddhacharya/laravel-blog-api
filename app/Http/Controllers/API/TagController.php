@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\GetPerPageAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\UpdateTagRequest;
 use App\Http\Resources\TagResource;
 use App\Models\Tag;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
@@ -15,11 +17,11 @@ class TagController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         Gate::authorize('viewAny', Tag::class);
 
-        $tags = Tag::withCount('posts')->paginate();
+        $tags = Tag::withCount('posts')->paginate(GetPerPageAction::execute($request));
 
         return TagResource::collection($tags);
     }

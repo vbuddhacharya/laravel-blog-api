@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\GetPerPageAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AttachTagRequest;
 use App\Http\Resources\PostResource;
@@ -15,9 +16,11 @@ class PostTagController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Post $post)
+    public function index(Request $request, Post $post)
     {
-        return TagResource::collection($post->tags);
+        $tags = $post->tags()->paginate(GetPerPageAction::execute($request));
+
+        return TagResource::collection($tags);
     }
 
     /**

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\GetPerPageAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Models\Post;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class PostCommentController extends Controller
@@ -14,11 +16,11 @@ class PostCommentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Post $post)
+    public function index(Request $request, Post $post)
     {
         Gate::authorize('viewAny', Comment::class);
 
-        $comments = $post->comments()->with('user')->paginate();
+        $comments = $post->comments()->with('user')->paginate(GetPerPageAction::execute($request));
 
         return CommentResource::collection($comments);
     }
