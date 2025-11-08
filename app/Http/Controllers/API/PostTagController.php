@@ -26,6 +26,13 @@ class PostTagController extends Controller
      */
     public function store(AttachTagRequest $request, Post $post)
     {
+        if ($request->user()->cannot('update', $post)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to attach tags to this post',
+            ], 403);
+        }
+
         $tags = $request->validated()['tags'];
 
         $post->tags()->syncWithoutDetaching($tags);
@@ -58,6 +65,13 @@ class PostTagController extends Controller
      */
     public function destroy(Post $post, Tag $tag)
     {
+        if (request()->user()->cannot('update', $post)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to detach tags from this post',
+            ], 403);
+        }
+
         $post->tags()->detach($tag->id);
 
         return response()->json([
