@@ -16,7 +16,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::paginate();
+        $users = User::withCount('posts')->paginate();
 
         return UserResource::collection($users);
     }
@@ -50,7 +50,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return new UserResource($user);
+        return new UserResource($user->load('posts'));
     }
 
     /**
