@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateCommentRequest;
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class CommentController extends Controller
 {
@@ -38,6 +39,8 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
+        Gate::authorize('view', $comment);
+
         return response()->json([
             'success' => true,
             'data' => $comment->load('commentable', 'user'),
@@ -57,12 +60,22 @@ class CommentController extends Controller
      */
     public function update(UpdateCommentRequest $request, Comment $comment)
     {
+        if ($request->user()->cannot('update', $comment)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to update this comment',
+            ], 403);
+        }
+
         $validated = $request->validated();
+
+        $currentUserId = $request->user()->id;
+
         $comment->update(array_merge(
             $validated,
             [
                 'updated_by' => $request->user()->id,
-                'user_id' => $validated['user_id'] ?? $comment->user_id,
+                'user_id' => $request->user()->isAdmin() ? $validated['user_id'] ?? $currentUserId : $currentUserId, // Ensure only admin can set different user id
             ]
         ));
 
@@ -78,6 +91,13 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
+        if (request()->user()->cannot('delete', $comment)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to delete this comment',
+            ], 403);
+        }
+
         $comment->update([
             'deleted_by' => request()->user()->id,
         ]);
