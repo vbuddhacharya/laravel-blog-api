@@ -4,8 +4,6 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommentRequest;
-use App\Http\Requests\UpdateCommentRequest;
-use App\Models\Comment;
 use App\Models\Post;
 
 class PostCommentController extends Controller
@@ -56,12 +54,9 @@ class PostCommentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Comment $comment)
+    public function show()
     {
-        return response()->json([
-            'success' => true,
-            'data' => $comment->load('commentable', 'user'),
-        ]);
+        //
     }
 
     /**
@@ -75,38 +70,16 @@ class PostCommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCommentRequest $request, Comment $comment)
+    public function update()
     {
-        $validated = $request->validated();
-        $comment->update(array_merge(
-            $validated,
-            [
-                'updated_by' => $request->user()->id,
-                'user_id' => $validated['user_id'] ?? $comment->user_id,
-            ]
-        ));
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Comment updated successfully',
-            'data' => $comment,
-        ]);
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Comment $comment)
+    public function destroy()
     {
-        $comment->update([
-            'deleted_by' => request()->user()->id,
-        ]);
-
-        $comment->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Comment deleted successfully',
-        ]);
+        //
     }
 }
