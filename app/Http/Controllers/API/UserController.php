@@ -36,6 +36,14 @@ class UserController extends Controller
      */
     public function store(UserService $service, RegisterUserRequest $request)
     {
+        if ($request->user()->cannot('create', User::class)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized to create user',
+                'data' => null,
+            ], 403);
+        }
+
         $user = $service->store($request->validated());
 
         return response()->json([
@@ -69,6 +77,14 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
+        if ($request->user()->cannot('update', $user)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized to update this user',
+                'data' => null,
+            ], 403);
+        }
+
         $user->update(array_merge($request->validated(), [
             'password' => $request->filled('password') ? bcrypt($request->password) : $user->password,
             'updated_by' => $request->user()->id,
@@ -86,8 +102,16 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        if (auth()->user()->cannot('delete', $user)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized to delete this user',
+                'data' => null,
+            ], 403);
+        }
+
         $user->update([
-            'deleted_by' => request()->user()->id,
+            'deleted_by' => auth()->user()->id,
         ]);
 
         $user->delete();
