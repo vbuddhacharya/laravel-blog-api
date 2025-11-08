@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\GetPerPageAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
@@ -15,11 +17,11 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         Gate::authorize('viewAny', Category::class);
 
-        $categories = Category::paginate();
+        $categories = Category::paginate(GetPerPageAction::execute($request));
 
         return CategoryResource::collection($categories);
     }
