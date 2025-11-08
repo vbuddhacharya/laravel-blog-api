@@ -22,4 +22,9 @@ class Tag extends Model
     {
         return $this->morphedByMany(Post::class, 'taggable');
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 }
