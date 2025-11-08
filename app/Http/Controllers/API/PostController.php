@@ -59,7 +59,7 @@ class PostController extends Controller
     {
         Gate::authorize('view', $post);
 
-        return new PostResource($post->load(['author', 'category', 'tags']));
+        return new PostResource($post->load(['author', 'category', 'tags', 'comments']));
     }
 
     /**
@@ -91,7 +91,7 @@ class PostController extends Controller
             ]
         ));
 
-        return new PostResource($post->load(['author', 'category', 'tags']));
+        return new PostResource($post->load(['author', 'category', 'tags', 'comments']));
     }
 
     /**
