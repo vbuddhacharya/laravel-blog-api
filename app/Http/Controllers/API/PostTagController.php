@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AttachTagRequest;
+use App\Http\Resources\PostResource;
+use App\Http\Resources\TagResource;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
@@ -15,10 +17,7 @@ class PostTagController extends Controller
      */
     public function index(Post $post)
     {
-        return response()->json([
-            'success' => true,
-            'data' => $post->tags,
-        ], 200);
+        return TagResource::collection($post->tags);
     }
 
     /**
@@ -28,7 +27,6 @@ class PostTagController extends Controller
     {
         if ($request->user()->cannot('update', $post)) {
             return response()->json([
-                'success' => false,
                 'message' => 'You do not have permission to attach tags to this post',
             ], 403);
         }
@@ -37,11 +35,7 @@ class PostTagController extends Controller
 
         $post->tags()->syncWithoutDetaching($tags);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Tags attached successfully',
-            'data' => $post->tags,
-        ], 200);
+        return new PostResource($post->load('tags'));
     }
 
     /**
@@ -67,17 +61,12 @@ class PostTagController extends Controller
     {
         if (request()->user()->cannot('update', $post)) {
             return response()->json([
-                'success' => false,
                 'message' => 'You do not have permission to detach tags from this post',
             ], 403);
         }
 
         $post->tags()->detach($tag->id);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Tag detached successfully',
-            'data' => $post->tags,
-        ], 200);
+        return new PostResource($post->load('tags'));
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Support\Facades\Gate;
 
@@ -17,12 +18,9 @@ class PostController extends Controller
     {
         Gate::authorize('viewAny', Post::class);
 
-        $posts = Post::with(['author', 'category', 'tags'])->get();
+        $posts = Post::with(['author', 'category', 'tags'])->paginate();
 
-        return response()->json([
-            'success' => true,
-            'data' => $posts,
-        ], 200);
+        return PostResource::collection($posts);
     }
 
     /**
@@ -40,7 +38,6 @@ class PostController extends Controller
     {
         if (request()->user()->cannot('create', Post::class)) {
             return response()->json([
-                'success' => false,
                 'message' => 'Unauthorized to create post',
             ], 403);
         }
@@ -52,11 +49,7 @@ class PostController extends Controller
             'created_by' => $request->user()->id,
         ]));
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Post created successfully',
-            'data' => $post,
-        ], 201);
+        return new PostResource($post->load(['author', 'category', 'tags']));
     }
 
     /**
@@ -66,10 +59,7 @@ class PostController extends Controller
     {
         Gate::authorize('view', $post);
 
-        return response()->json([
-            'success' => true,
-            'data' => $post->load(['author', 'category', 'tags']),
-        ], 200);
+        return new PostResource($post->load(['author', 'category', 'tags', 'comments']));
     }
 
     /**
@@ -87,12 +77,12 @@ class PostController extends Controller
     {
         if (request()->user()->cannot('update', $post)) {
             return response()->json([
-                'success' => false,
                 'message' => 'Unauthorized to update post',
             ], 403);
         }
 
         $validated = $request->validated();
+
         $post->update(array_merge(
             $validated,
             [
@@ -101,11 +91,7 @@ class PostController extends Controller
             ]
         ));
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Post updated successfully',
-            'data' => $post,
-        ], 200);
+        return new PostResource($post->load(['author', 'category', 'tags', 'comments']));
     }
 
     /**
@@ -115,7 +101,6 @@ class PostController extends Controller
     {
         if (request()->user()->cannot('delete', $post)) {
             return response()->json([
-                'success' => false,
                 'message' => 'Unauthorized to delete post',
             ], 403);
         }
@@ -127,8 +112,7 @@ class PostController extends Controller
         $post->delete();
 
         return response()->json([
-            'success' => true,
             'message' => 'Post deleted successfully',
-        ], 200);
+        ]);
     }
 }

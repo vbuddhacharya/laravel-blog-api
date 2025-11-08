@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
@@ -15,12 +17,11 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
+        Gate::authorize('viewAny', Category::class);
 
-        return response()->json([
-            'success' => true,
-            'data' => $categories,
-        ], 200);
+        $categories = Category::paginate();
+
+        return CategoryResource::collection($categories);
     }
 
     /**
@@ -36,7 +37,14 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
+        if ($request->user()->cannot('create', Category::class)) {
+            return response()->json([
+                'message' => 'You do not have permission to create a category',
+            ], 403);
+        }
+
         $validated = $request->validated();
+
         $category = Category::create(array_merge(
             $validated,
             [
@@ -45,10 +53,7 @@ class CategoryController extends Controller
             ]
         ));
 
-        return response()->json([
-            'success' => true,
-            'data' => $category,
-        ], 201);
+        return new CategoryResource($category);
     }
 
     /**
@@ -56,10 +61,9 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        return response()->json([
-            'success' => true,
-            'data' => $category,
-        ], 200);
+        Gate::authorize('view', $category);
+
+        return new CategoryResource($category->load('posts'));
     }
 
     /**
@@ -75,6 +79,12 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
+        if ($request->user()->cannot('update', $category)) {
+            return response()->json([
+                'message' => 'You do not have permission to update this category',
+            ], 403);
+        }
+
         $validated = $request->validated();
 
         $category->update(array_merge(
@@ -85,11 +95,7 @@ class CategoryController extends Controller
             ]
         ));
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Category updated successfully',
-            'data' => $category,
-        ], 200);
+        return new CategoryResource($category->load('posts'));
     }
 
     /**
@@ -97,6 +103,12 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        if (request()->user()->cannot('delete', $category)) {
+            return response()->json([
+                'message' => 'You do not have permission to delete this category',
+            ], 403);
+        }
+
         $category->update([
             'deleted_by' => request()->user()->id,
         ]);
@@ -104,9 +116,7 @@ class CategoryController extends Controller
         $category->delete();
 
         return response()->json([
-            'success' => true,
             'message' => 'Category deleted successfully',
-            'data' => null,
         ], 200);
     }
 }

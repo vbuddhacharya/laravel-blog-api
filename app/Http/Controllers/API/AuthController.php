@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Enums\RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
-use App\Models\User;
+use App\Http\Resources\UserResource;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 
@@ -15,12 +14,8 @@ class AuthController extends Controller
     public function register(UserService $service, RegisterUserRequest $request)
     {
         $user = $service->store($request->validated());
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'User registered successfully',
-            'data' => $user,
-        ], 201);
+
+        return new UserResource($user);
     }
 
     public function login(LoginUserRequest $request)
@@ -29,9 +24,7 @@ class AuthController extends Controller
 
         if (! auth()->attempt($credentials)) {
             return response()->json([
-                'success' => false,
                 'message' => 'Invalid credentials',
-                'data' => null,
             ], 401);
         }
 
@@ -39,7 +32,6 @@ class AuthController extends Controller
         $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
 
         return response()->json([
-            'success' => true,
             'message' => 'User logged in successfully',
             'data' => [
                 'user' => $user->name,
@@ -53,9 +45,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'success' => true,
             'message' => 'User logged out successfully',
-            'data' => null,
         ], 200);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateCommentRequest;
+use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -41,10 +42,7 @@ class CommentController extends Controller
     {
         Gate::authorize('view', $comment);
 
-        return response()->json([
-            'success' => true,
-            'data' => $comment->load('commentable', 'user'),
-        ]);
+        return new CommentResource($comment->load(['user', 'commentable']));
     }
 
     /**
@@ -62,7 +60,6 @@ class CommentController extends Controller
     {
         if ($request->user()->cannot('update', $comment)) {
             return response()->json([
-                'success' => false,
                 'message' => 'You do not have permission to update this comment',
             ], 403);
         }
@@ -79,11 +76,7 @@ class CommentController extends Controller
             ]
         ));
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Comment updated successfully',
-            'data' => $comment,
-        ]);
+        return new CommentResource($comment->load('user'));
     }
 
     /**
@@ -93,7 +86,6 @@ class CommentController extends Controller
     {
         if (request()->user()->cannot('delete', $comment)) {
             return response()->json([
-                'success' => false,
                 'message' => 'You do not have permission to delete this comment',
             ], 403);
         }
@@ -105,7 +97,6 @@ class CommentController extends Controller
         $comment->delete();
 
         return response()->json([
-            'success' => true,
             'message' => 'Comment deleted successfully',
         ]);
     }
