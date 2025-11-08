@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
+use Illuminate\Support\Facades\Gate;
 
 class PostController extends Controller
 {
@@ -14,6 +15,8 @@ class PostController extends Controller
      */
     public function index()
     {
+        Gate::authorize('viewAny', Post::class);
+
         $posts = Post::with(['author', 'category', 'tags'])->get();
 
         return response()->json([
@@ -35,6 +38,13 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
+        if (request()->user()->cannot('create', Post::class)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized to create post',
+            ], 403);
+        }
+
         $validated = $request->validated();
 
         $post = Post::create(array_merge($validated, [
@@ -54,6 +64,8 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        Gate::authorize('view', $post);
+
         return response()->json([
             'success' => true,
             'data' => $post->load(['author', 'category', 'tags']),
@@ -73,6 +85,13 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
+        if (request()->user()->cannot('update', $post)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized to update post',
+            ], 403);
+        }
+
         $validated = $request->validated();
         $post->update(array_merge(
             $validated,
@@ -94,6 +113,13 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        if (request()->user()->cannot('delete', $post)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized to delete post',
+            ], 403);
+        }
+
         $post->update([
             'deleted_by' => request()->user()->id,
         ]);
