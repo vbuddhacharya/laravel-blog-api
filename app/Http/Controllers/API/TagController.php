@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\UpdateTagRequest;
+use App\Http\Resources\TagResource;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
@@ -18,12 +19,9 @@ class TagController extends Controller
     {
         Gate::authorize('viewAny', Tag::class);
 
-        $tags = Tag::all();
+        $tags = Tag::withCount('posts')->paginate();
 
-        return response()->json([
-            'succes' => true,
-            'data' => $tags,
-        ]);
+        return TagResource::collection($tags);
     }
 
     /**
@@ -41,7 +39,6 @@ class TagController extends Controller
     {
         if ($request->user()->cannot('create', Tag::class)) {
             return response()->json([
-                'success' => false,
                 'message' => 'You do not have permission to create a tag.',
             ], 403);
         }
@@ -53,11 +50,7 @@ class TagController extends Controller
             'slug' => Str::slug($validated['name']),
         ]));
 
-        return response()->json([
-            'succes' => true,
-            'message' => 'Tag created successfully',
-            'data' => $tag,
-        ]);
+        return new TagResource($tag);
     }
 
     /**
@@ -67,10 +60,7 @@ class TagController extends Controller
     {
         Gate::authorize('view', $tag);
 
-        return response()->json([
-            'succes' => true,
-            'data' => $tag->load('posts'),
-        ]);
+        return new TagResource($tag->load('posts'));
     }
 
     /**
@@ -85,7 +75,6 @@ class TagController extends Controller
     {
         if ($request->user()->cannot('update', $tag)) {
             return response()->json([
-                'success' => false,
                 'message' => 'You do not have permission to update this tag.',
             ], 403);
         }
@@ -97,11 +86,7 @@ class TagController extends Controller
             'updated_by' => $request->user()->id,
         ]));
 
-        return response()->json([
-            'succes' => true,
-            'message' => 'Tag updated successfully',
-            'data' => $tag,
-        ]);
+        return new TagResource($tag);
     }
 
     /**
@@ -111,7 +96,6 @@ class TagController extends Controller
     {
         if (request()->user()->cannot('delete', $tag)) {
             return response()->json([
-                'success' => false,
                 'message' => 'You do not have permission to delete this tag.',
             ], 403);
         }
@@ -123,7 +107,6 @@ class TagController extends Controller
         $tag->delete();
 
         return response()->json([
-            'succes' => true,
             'message' => 'Tag deleted successfully',
         ]);
     }
