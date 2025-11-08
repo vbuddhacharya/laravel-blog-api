@@ -7,18 +7,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function register(RegisterUserRequest $request)
+    public function register(UserService $service, RegisterUserRequest $request)
     {
-
-        $user = User::create(array_merge(
-            $request->validated(),
-            ['role' => RoleEnum::AUTHOR]
-        ));
-
+        $user = $service->store($request->validated());
+        
         return response()->json([
             'success' => true,
             'message' => 'User registered successfully',
