@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\CommentController;
+use App\Http\Controllers\API\PostCommentController;
 use App\Http\Controllers\API\PostController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
@@ -20,4 +22,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('users', UserController::class);
     Route::apiResource('posts', PostController::class);
+    Route::apiResource('posts.comments', PostCommentController::class)->only(['index', 'store']);
+    Route::apiResource('comments', CommentController::class)->only(['show', 'update', 'destroy']);
 });
