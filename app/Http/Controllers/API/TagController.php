@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\UpdateTagRequest;
 use App\Models\Tag;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class TagController extends Controller
@@ -15,6 +16,8 @@ class TagController extends Controller
      */
     public function index()
     {
+        Gate::authorize('viewAny', Tag::class);
+
         $tags = Tag::all();
 
         return response()->json([
@@ -36,6 +39,13 @@ class TagController extends Controller
      */
     public function store(StoreTagRequest $request)
     {
+        if ($request->user()->cannot('create', Tag::class)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to create a tag.',
+            ], 403);
+        }
+
         $validated = $request->validated();
 
         $tag = Tag::create(array_merge($validated, [
@@ -55,6 +65,8 @@ class TagController extends Controller
      */
     public function show(Tag $tag)
     {
+        Gate::authorize('view', $tag);
+
         return response()->json([
             'succes' => true,
             'data' => $tag->load('posts'),
@@ -71,6 +83,13 @@ class TagController extends Controller
      */
     public function update(UpdateTagRequest $request, Tag $tag)
     {
+        if ($request->user()->cannot('update', $tag)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to update this tag.',
+            ], 403);
+        }
+
         $validated = $request->validated();
 
         $tag->update(array_merge($validated, [
@@ -90,6 +109,13 @@ class TagController extends Controller
      */
     public function destroy(Tag $tag)
     {
+        if (request()->user()->cannot('delete', $tag)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to delete this tag.',
+            ], 403);
+        }
+
         $tag->update([
             'deleted_by' => request()->user()->id,
         ]);
