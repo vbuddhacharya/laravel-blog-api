@@ -49,7 +49,6 @@ class TagController extends Controller
 
         $tag = Tag::create(array_merge($validated, [
             'created_by' => $request->user()->id,
-            'slug' => Str::slug($validated['name']),
         ]));
 
         return new TagResource($tag);
