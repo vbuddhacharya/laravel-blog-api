@@ -13,9 +13,6 @@ use Illuminate\Support\Facades\Gate;
 
 class PostCommentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request, Post $post)
     {
         Gate::authorize('viewAny', Comment::class);
@@ -25,17 +22,6 @@ class PostCommentController extends Controller
         return CommentResource::collection($comments);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreCommentRequest $request, Post $post)
     {
         if (request()->user()->cannot('create', Comment::class)) {
@@ -57,37 +43,5 @@ class PostCommentController extends Controller
         ));
 
         return new CommentResource($comment->load('user'));
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show()
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update()
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy()
-    {
-        //
     }
 }

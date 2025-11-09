@@ -32,7 +32,6 @@ class UpdateCommentRequest extends FormRequest
     public function failedValidation(Validator $validator)
     {
         $response = response()->json([
-            'success' => false,
             'message' => 'Error updating comment',
             'errors' => $validator->errors(),
         ], 422);

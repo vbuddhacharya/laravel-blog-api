@@ -14,9 +14,6 @@ use Illuminate\Support\Str;
 
 class TagController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         Gate::authorize('viewAny', Tag::class);
@@ -26,17 +23,6 @@ class TagController extends Controller
         return TagResource::collection($tags);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreTagRequest $request)
     {
         if ($request->user()->cannot('create', Tag::class)) {
@@ -54,9 +40,6 @@ class TagController extends Controller
         return new TagResource($tag);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Tag $tag)
     {
         Gate::authorize('view', $tag);
@@ -64,14 +47,6 @@ class TagController extends Controller
         return new TagResource($tag->load('posts'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit() {}
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateTagRequest $request, Tag $tag)
     {
         if ($request->user()->cannot('update', $tag)) {
@@ -90,9 +65,6 @@ class TagController extends Controller
         return new TagResource($tag);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Tag $tag)
     {
         if (request()->user()->cannot('delete', $tag)) {

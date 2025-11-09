@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreTagRequest extends FormRequest
 {
@@ -24,5 +26,15 @@ class StoreTagRequest extends FormRequest
         return [
             'name' => 'required|string|max:255|unique:tags,name',
         ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        $response = response()->json([
+            'message' => 'Error creating tag',
+            'data' => $validator->errors(),
+        ], 422);
+
+        throw new HttpResponseException($response);
     }
 }

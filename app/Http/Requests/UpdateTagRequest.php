@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
 class UpdateTagRequest extends FormRequest
@@ -25,5 +27,15 @@ class UpdateTagRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique('categories', 'name')->ignore($this->route('tag')->id)],
         ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        $response = response()->json([
+            'message' => 'Error updating tag',
+            'data' => $validator->errors(),
+        ], 422);
+
+        throw new HttpResponseException($response);
     }
 }

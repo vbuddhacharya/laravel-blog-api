@@ -33,7 +33,6 @@ class RegisterUserRequest extends FormRequest
     public function failedValidation(Validator $validator)
     {
         $response = response()->json([
-            'success' => false,
             'message' => 'Validation Failed',
             'data' => $validator->errors(),
         ], 422);

@@ -14,9 +14,6 @@ use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         Gate::authorize('viewAny', Category::class);
@@ -26,17 +23,6 @@ class CategoryController extends Controller
         return CategoryResource::collection($categories);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreCategoryRequest $request)
     {
         if ($request->user()->cannot('create', Category::class)) {
@@ -57,9 +43,6 @@ class CategoryController extends Controller
         return new CategoryResource($category);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Category $category)
     {
         Gate::authorize('view', $category);
@@ -67,17 +50,6 @@ class CategoryController extends Controller
         return new CategoryResource($category->load('posts'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
         if ($request->user()->cannot('update', $category)) {
@@ -99,9 +71,6 @@ class CategoryController extends Controller
         return new CategoryResource($category->load('posts'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Category $category)
     {
         if (request()->user()->cannot('delete', $category)) {
