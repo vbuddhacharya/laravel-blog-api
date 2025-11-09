@@ -28,6 +28,8 @@ class StorePostRequest extends FormRequest
             'content' => 'required|string',
             'category_id' => 'required|exists:categories,id',
             'user_id' => 'nullable|exists:users,id', // nullable to auto-assign to authenticated user while also allowing admin to assign to others
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
         ];
     }
 
