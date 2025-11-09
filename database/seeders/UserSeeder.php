@@ -22,5 +22,29 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password'),
             'role' => RoleEnum::ADMIN,
         ]);
+
+        User::firstOrCreate([
+            'email' => 'admin2@admin.com',
+        ], [
+            'name' => 'Admin User2',
+            'password' => Hash::make('password'),
+            'role' => RoleEnum::ADMIN,
+        ]);
+
+        User::firstOrCreate([
+            'email' => 'john@doe.com',
+        ], [
+            'name' => 'John Doe',
+            'password' => Hash::make('password'),
+            'role' => RoleEnum::AUTHOR,
+        ]);
+
+        User::firstOrCreate([
+            'email' => 'jane@smith.com',
+        ], [
+            'name' => 'Jane Smith',
+            'password' => Hash::make('password'),
+            'role' => RoleEnum::AUTHOR,
+        ]);
     }
 }
