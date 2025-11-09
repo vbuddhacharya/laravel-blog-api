@@ -25,7 +25,14 @@ class UpdateTagRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', Rule::unique('categories', 'name')->ignore($this->route('tag')->id)],
+            'name' => ['required', 'string', 'max:255', Rule::unique('tags', 'name')->ignore($this->route('tag')->id)],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'tags.*.exists' => 'One or more tags do not exist',
         ];
     }
 
