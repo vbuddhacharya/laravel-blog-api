@@ -31,6 +31,11 @@ A RESTful API built with Laravel that provides endpoints for managing user, blog
     `php artisan serve`
 
 ---
+**Database Schema**
+
+[Schema link](https://dbdiagram.io/d/Blog-API-690b6ef86735e1117066d041)
+
+---
 **API Documentation**
 
 You can explore and test endpoints using Postman.
