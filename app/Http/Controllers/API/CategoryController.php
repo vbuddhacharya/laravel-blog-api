@@ -50,7 +50,6 @@ class CategoryController extends Controller
         $category = Category::create(array_merge(
             $validated,
             [
-                'slug' => Str::slug($validated['name']),
                 'created_by' => $request->user()->id,
             ]
         ));
