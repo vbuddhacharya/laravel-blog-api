@@ -16,9 +16,6 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         Gate::authorize('viewAny', Post::class);
@@ -48,22 +45,11 @@ class PostController extends Controller
         return PostResource::collection($posts);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StorePostRequest $request)
     {
         if (request()->user()->cannot('create', Post::class)) {
             return response()->json([
-                'message' => 'Unauthorized to create post',
+                'message' => 'You do not have permission to create post',
             ], 403);
         }
 
@@ -83,9 +69,6 @@ class PostController extends Controller
         return new PostResource($post->load(['author', 'category', 'tags']));
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Post $post)
     {
         Gate::authorize('view', $post);
@@ -93,22 +76,11 @@ class PostController extends Controller
         return new PostResource($post->load(['author', 'category', 'tags', 'comments']));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdatePostRequest $request, Post $post)
     {
         if (request()->user()->cannot('update', $post)) {
             return response()->json([
-                'message' => 'Unauthorized to update post',
+                'message' => 'You do not have permission to edit this post',
             ], 403);
         }
 
@@ -125,14 +97,11 @@ class PostController extends Controller
         return new PostResource($post->load(['author', 'category', 'tags', 'comments']));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Post $post)
     {
         if (request()->user()->cannot('delete', $post)) {
             return response()->json([
-                'message' => 'Unauthorized to delete post',
+                'message' => 'You do not have permission to delet this post',
             ], 403);
         }
 

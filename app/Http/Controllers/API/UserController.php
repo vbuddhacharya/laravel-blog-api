@@ -14,9 +14,6 @@ use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         Gate::authorize('viewAny', User::class);
@@ -26,17 +23,6 @@ class UserController extends Controller
         return UserResource::collection($users);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(UserService $service, RegisterUserRequest $request)
     {
         if ($request->user()->cannot('create', User::class)) {
@@ -50,25 +36,11 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(User $user)
     {
         return new UserResource($user->load('posts'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateUserRequest $request, User $user)
     {
         if ($request->user()->cannot('update', $user)) {
@@ -85,9 +57,6 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(User $user)
     {
         if (auth()->user()->cannot('delete', $user)) {
