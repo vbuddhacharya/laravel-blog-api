@@ -6,25 +6,35 @@ A RESTful API built with Laravel that provides endpoints for managing user, blog
 **Project Setup**
 
  - Clone the repository
+   
     `git clone https://github.com/vbuddhacharya/laravel-blog-api.git`
  - Change directory
+   
     `cd laravel-blog-api`
  - Install dependencies
+   
 	`composer install`
  - Create .env file
+   
 	`cp .env.example .env`
  - Generate app key
+   
     `php artisan key:generate`
  - Run migrations
+   
 	`php artisan migrate`
  - Run seeders
+   
 	`php artisan db:seed`
  - Start the server
+   
     `php artisan serve`
 
 ---
 **API Documentation**
+
 You can explore and test endpoints using Postman.
+
 Public docs available [here](https://documenter.getpostman.com/view/34460698/2sB3WsQzyn)
 
 ---
