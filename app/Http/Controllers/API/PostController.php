@@ -8,6 +8,7 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -29,6 +30,18 @@ class PostController extends Controller
                 AllowedFilter::partial('author', 'author.name'),
                 AllowedFilter::partial('tag', 'tags.name'),
                 AllowedFilter::partial('category', 'category.name'),
+                AllowedFilter::callback('search', function (Builder $query, $value) { // for global search
+                    $query->where('title', 'like', "%{$value}%")
+                        ->orWhereHas('author', function ($query) use ($value) {
+                            $query->where('name', 'like', "%{$value}%");
+                        })
+                        ->orWhereHas('category', function ($query) use ($value) {
+                            $query->where('name', 'like', "%{$value}%");
+                        })
+                        ->orWhereHas('tags', function ($query) use ($value) {
+                            $query->where('name', 'like', "%{$value}%");
+                        });
+                }),
             ])
             ->paginate(GetPerPageAction::execute($request));
 
