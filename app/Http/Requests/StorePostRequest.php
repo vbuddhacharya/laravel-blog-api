@@ -36,7 +36,6 @@ class StorePostRequest extends FormRequest
     public function failedValidation(Validator $validator)
     {
         $response = response()->json([
-            'success' => false,
             'message' => 'Error creating post',
             'data' => $validator->errors(),
         ], 422);

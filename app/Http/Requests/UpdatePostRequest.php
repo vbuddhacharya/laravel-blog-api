@@ -34,7 +34,6 @@ class UpdatePostRequest extends FormRequest
     public function failedValidation(Validator $validator)
     {
         $response = response()->json([
-            'success' => false,
             'message' => 'Error updating post',
             'data' => $validator->errors(),
         ], 422);

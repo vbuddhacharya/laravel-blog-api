@@ -32,7 +32,6 @@ class AttachTagRequest extends FormRequest
     public function failedValidation(Validator $validator)
     {
         $response = response()->json([
-            'success' => false,
             'message' => 'Error attaching tags',
             'data' => $validator->errors(),
         ], 422);

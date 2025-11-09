@@ -32,7 +32,6 @@ class StoreCommentRequest extends FormRequest
     public function failedValidation(Validator $validator)
     {
         $response = response()->json([
-            'success' => false,
             'message' => 'Error creating comment',
             'errors' => $validator->errors(),
         ], 422);

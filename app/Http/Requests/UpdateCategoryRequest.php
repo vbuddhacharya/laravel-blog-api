@@ -33,7 +33,6 @@ class UpdateCategoryRequest extends FormRequest
     public function failedValidation(Validator $validator)
     {
         $response = response()->json([
-            'success' => false,
             'message' => 'Error updating category',
             'data' => $validator->errors(),
         ], 422);
