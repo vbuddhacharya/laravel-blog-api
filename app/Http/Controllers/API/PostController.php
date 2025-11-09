@@ -76,6 +76,10 @@ class PostController extends Controller
             'created_by' => $request->user()->id,
         ]));
 
+        if (! empty($validated['tags'])) {
+            $post->tags()->attach($validated['tags']);
+        }
+
         return new PostResource($post->load(['author', 'category', 'tags']));
     }
 
