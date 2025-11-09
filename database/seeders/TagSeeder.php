@@ -13,46 +13,17 @@ class TagSeeder extends Seeder
     public function run(): void
     {
         $tags = [
-            [
-                'name' => 'Tech',
-            ],
-            [
-                'name' => 'Beauty',
-            ],
-            [
-                'name' => 'DIY',
-            ],
-            [
-                'name' => 'Travel',
-            ],
-            [
-                'name' => 'Food',
-            ],
-            [
-                'name' => 'Fashion',
-            ],
-            [
-                'name' => 'Fitness',
-            ],
-            [
-                'name' => 'Health',
-            ],
-            [
-                'name' => 'Lifestyle',
-            ],
-            [
-                'name' => 'Parenting',
-            ],
-            [
-                'name' => 'Pets',
-            ],
-            [
-                'name' => 'Sports',
-            ],
-            [
-                'name' => 'Other',
-            ],
+            ['name' => 'AI'],
+            ['name' => 'Technology'],
+            ['name' => 'Skincare'],
+            ['name' => 'Beauty'],
+            ['name' => 'Recipes'],
+            ['name' => 'Food'],
+            ['name' => 'Wellness'],
+            ['name' => 'Health'],
+            ['name' => 'Fitness'],
         ];
+
 
         foreach ($tags as $tag) {
             Tag::firstOrCreate($tag);
