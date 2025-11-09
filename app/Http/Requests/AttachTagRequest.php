@@ -29,6 +29,14 @@ class AttachTagRequest extends FormRequest
         ];
     }
 
+    public function messages()
+    {
+        return [
+            'tags.*.exists' => 'One or more tags do not exist',
+        ];
+
+    }
+
     public function failedValidation(Validator $validator)
     {
         $response = response()->json([
