@@ -69,8 +69,10 @@ class PostController extends Controller
 
         $validated = $request->validated();
 
+        $postOwnerId = $validated['user_id'] ?? $request->user()->id;
+
         $post = Post::create(array_merge($validated, [
-            'user_id' => $validated['user_id'] ?? $request->user()->id,
+            'user_id' => $request->user()->isAdmin() ? $postOwnerId : $request->user()->id, // only let admin set custom user_id, else set request's user id
             'created_by' => $request->user()->id,
         ]));
 

@@ -44,7 +44,7 @@ class CommentPolicy
      */
     public function delete(User $user, Comment $comment): bool
     {
-        return $user->isAdmin() || $user->id === $comment->user_id;
+        return $user->isAdmin() || $user->id === $comment->user_id || $user->id === $comment->commentable->user_id; // comments can be deleted by admin, comment owner or post owner
     }
 
     /**
@@ -52,7 +52,7 @@ class CommentPolicy
      */
     public function restore(User $user, Comment $comment): bool
     {
-        return $user->isAdmin() || $user->id === $comment->user_id;
+        return $user->isAdmin() || $user->id === $comment->user_id || $user->id === $comment->commentable->user_id;
     }
 
     /**

@@ -7,7 +7,7 @@ use App\Models\User;
 
 class UserService
 {
-    public function store(array $data)
+    public function store(array $data) // to create user from both register (auth) and store (user) methods
     {
         $user = User::create(array_merge(
             $data,
